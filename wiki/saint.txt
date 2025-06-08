@@ -1,0 +1,6 @@
+Summary
+"If you die by execution, your team loses."
+The Saint ends the game if they are executed.
+
+If the Saint dies by execution, the game ends. Good loses and evil wins.
+If the Saint dies in any way other than execution—such as the Demon killing them—then the game continues.

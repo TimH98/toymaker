@@ -1,0 +1,7 @@
+Summary
+"Each night*, choose a player (not yourself): they are safe from the Demon tonight."
+The Monk protects other players from the Demon.
+
+Each night except the first, the Monk may choose to protect any player except themself.
+If the Demon attacks a player who has been protected by the Monk, then that player does not die. The Demon does not get to attack another player—there is simply no death tonight.
+The Monk does not protect against the Demon nominating and executing someone.

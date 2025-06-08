@@ -1,0 +1,8 @@
+Summary
+"Each night*, you learn which character died by execution today."
+The Undertaker learns which character was executed today.
+
+The player must have died from execution for the Undertaker to learn who they are. Deaths during the day for other reasons, such as the Gunslinger choosing a player to kill, or the exile of a Traveller, do not count.
+The Undertaker wakes each night except the first, as there have been no executions yet.
+If nobody died today, the Undertaker learns nothing. The Storyteller either does not wake the Undertaker at night, or wakes them but does not show a token.
+If the Drunk is executed, the Undertaker is shown the Drunk character token, not the token for the Townsfolk that the Drunk player thought they were.

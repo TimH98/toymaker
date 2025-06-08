@@ -1,0 +1,7 @@
+Summary
+"You start knowing that 1 of 2 players is a particular Outsider. (Or that zero are in play.)"
+The Librarian learns that a particular Outsider character is in play, but not exactly which player it is.
+
+During the first night, the Librarian learns that one of two players is a specific Outsider.
+They learn this only once and then learn nothing more.
+The Drunk is an Outsider. If the Librarian learns that one of two players is the Drunk, they do not learn the Townsfolk that the Drunk's player thinks they are.

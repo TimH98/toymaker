@@ -1,0 +1,9 @@
+Summary
+"Once per game, during the day, publicly choose a player: if they are the Demon, they die."
+The Slayer can kill the Demon by guessing who they are.
+
+The Slayer can choose to use their ability during the day, and everyone will learn when they're using it. If the Slayer chooses the Demon, the Demon dies immediately. Otherwise, nothing happens.
+The players do not learn the identity of the dead player. After all, it may have been the Recluse!
+A Slayer that uses their ability while poisoned or drunk may not use it again.
+The Slayer will want to choose an alive player. Even if the Slayer chooses a dead Imp, nothing happens, because a dead player can't die again.
+Players may say whatever they want at any time, so a player who's pretending to be the Slayer may pretend to use the Slayer ability.

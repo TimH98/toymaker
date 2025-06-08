@@ -1,0 +1,7 @@
+Summary
+"Each night*, choose a player: they die. If you kill yourself this way, a Minion becomes the Imp."
+The Imp kills a player each night, and can make copies of itself... for a terrible price.
+
+On each night except the first, the Imp chooses a player to kill. Because most characters act after the Demon, that player will probably not get to use their ability tonight.
+The Imp, because they're a Demon, knows which players are their Minions, and knows three not-in-play good characters that they can safely bluff as.
+If the Imp dies, the game ends and good wins. However, if the Imp kills themself at night, they die and an alive Minion becomes an Imp. This new Imp does not act that same night, but is now the Imp in every other way—they kill each night, and lose if they die.

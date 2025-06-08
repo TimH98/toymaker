@@ -1,0 +1,6 @@
+Summary
+"If you die at night, you are woken to choose a player: you learn their character."
+If the Ravenkeeper dies at night, they get to learn one player's character.
+
+The Ravenkeeper is woken on the night that they die, and chooses a player immediately.
+The Ravenkeeper may choose a dead player if they wish.
