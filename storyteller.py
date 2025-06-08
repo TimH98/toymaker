@@ -71,9 +71,7 @@ class Storyteller:
         return choice(good_players)
     
     def day(self):
-        chats = [] # list of tuples of names
-        pending_chat_requests = [] # list of tuples of names (from, to)
-        townsquare = self.gamestate.players.copy() # list of Player objects
+        turn_order = sample(self.gamestate.players, k=len(self.gamestate.players))
         alive_players = len([p for p in self.gamestate.players if p.alive])
         time = 0
         self.broadcast(f"=== DAY START ===")
@@ -84,87 +82,34 @@ class Storyteller:
             self.broadcast(f"The day begins, and the town wakes to discover that {self.died_tonight} is dead.")
         else:
             self.broadcast(f"The day begins, and the town wakes to discover that nobody died last night.")
-        self.broadcast(f"Remaining alive players: {', '.join([p.name for p in self.gamestate.players if p.alive])}")
-        # turn_order = sample(self.gamestate.players, k=len(self.gamestate.players))
-        turn_order = self.gamestate.players.copy()
+        
         while time < DAY_TIMES[alive_players]:
-            for p in turn_order:
-                # Unresolved private chat requests TODO probably want chat requests to interrupt turn order
-                for c in pending_chat_requests:
-                    if c[1] == p.name:
-                        p.add_history(f"{c[0]} requests to chat privately with you.")
-                        p.add_history(f"What would you like to do? Respond with a number:")
-                        p.add_history(f"[1] Accept the chat")
-                        p.add_history(f"[2] Reject the chat")
-                        choice = p.get_choice(ChoiceType.NUMBER)
-                        other_player = self.gamestate.name_to_player(c[0])
-                        if choice == 1:
-                            if other_player in townsquare:
-                                p.add_history(f"You start chatting with {other_player.name}.")
-                                other_player.add_history(f"You start chatting with {p.name}.")
-                                townsquare.remove(p)
-                                townsquare.remove(other_player)
-                                chats.append((p.name, other_player.name))
-                                self.broadcast(f"{p.name} and {other_player.name} begin a private chat.", to=townsquare)
-                            else:
-                                p.add_history(f"{other_player.name} is already in a chat.")
-                        elif choice == 2:
-                            p.add_history(f"You reject the chat request.")
-                            other_player.add_history(f"{p.name} rejects your chat request.")
-                        pending_chat_requests.remove(c)
-
-                # Public townsquare chat
-                if p in townsquare:
-                    p.add_history(f"What would you like to do? Respond with a number:")
-                    p.add_history(f"[1] Message a player privately (Recommended)")
-                    p.add_history(f"[2] Say something publicly")
-                    p.add_history(f"[3] Pass")
-                    p.reminder()
-                    # TODO - only show this during the nomination phase, it's poisoning the context
-                    # if p.alive and p not in self.has_slayer_shot:
-                    #     p.add_history(f"[4] Claim to be the slayer and attempt to shoot the demon")
-                    choice = p.get_choice(ChoiceType.NUMBER)
-                    if choice == 1:
-                        p.add_history("Please choose a player.")
-                        target_name = p.get_choice(ChoiceType.NAME, allowed_values=[q.name for q in townsquare if q.name != p.name])
-                        if target_name != p.name:
-                            p.add_history(f"You request a private chat with {target_name}.")
-                            pending_chat_requests.append((p.name, target_name))
-                    elif choice == 2:
-                        p.add_history("Please say something.")
-                        message = p.get_choice(ChoiceType.TEXT)
-                        townsquare_without_p = [q for q in townsquare if q.name != p.name]
-                        self.broadcast(f"{p.name} says, '{message}'", to=townsquare_without_p)
-                        shot, target_name = is_slayer_shot(message)
-                        if shot:
-                            self.slayer_turn(p, target_name)
-                    elif choice == 3:
-                        pass
-                # Private chats
-                for c in chats[:]:
-                    if p.name in c and c in chats: # kinda messy that we're modifying the list while iterating over it
-                        target = None
-                        if p.name == c[0]:
-                            target = self.gamestate.name_to_player(c[1])
-                        else:
-                            target = self.gamestate.name_to_player(c[0])
-                        p.add_history(f"What would you like to do? Respond with a number:")
-                        p.add_history(f"[1] Say something to {target.name}")
-                        p.add_history(f"[2] End the chat")
-                        choice = p.get_choice(ChoiceType.NUMBER)
-                        if choice == 1:
-                            p.add_history("Please say something.")
-                            p.reminder()
-                            message = p.get_choice(ChoiceType.TEXT)
-                            target.add_history(f"{p.name} says, '{message}'")
-                        elif choice == 2:
-                            p.add_history(f"You end the chat and return to the town square.")
-                            target.add_history(f"{p.name} ends the chat and you return to the town square.")
-                            townsquare.append(p)
-                            townsquare.append(target)
-                            chats.remove(c)
             time += 1
-    
+            for p in turn_order:
+                p.add_history(f"What would you like to do? Respond with a number:")
+                p.add_history(f"[1] Whisper to a player privately (recommended)")
+                p.add_history(f"[2] Say something publicly")
+                p.add_history(f"[3] Pass")
+                p.reminder()
+                choice = p.get_choice(ChoiceType.NUMBER)
+                if choice == 1:
+                    p.add_history("Please choose a player.")
+                    target_name = p.get_choice(ChoiceType.NAME, allowed_values=[q.name for q in turn_order if q.name != p.name])
+                    p.add_history(f"What would you like to say to {target_name}?")
+                    message = p.get_choice(ChoiceType.TEXT)
+                    target = self.gamestate.name_to_player(target_name)
+                    target.add_history(f"{p.name} whispers to you, '{message}'")
+                    other_players = [q for q in turn_order if q.name != p.name and q.name != target_name]
+                    self.broadcast(f"{p.name} whispers to {target_name}.", to=other_players)
+                elif choice == 2:
+                    p.add_history("Please say something.")
+                    message = p.get_choice(ChoiceType.TEXT)
+                    townsquare_without_p = [q for q in turn_order if q.name != p.name]
+                    self.broadcast(f"{p.name} says, '{message}'", to=townsquare_without_p)
+                    shot, target_name = is_slayer_shot(message)
+                    if shot:
+                        self.slayer_turn(p, target_name)
+
     def nominations(self):
         nominators = []
         nominees = []
@@ -197,10 +142,13 @@ class Storyteller:
                         # Enough votes to get on the block
                         on_the_block = (target.name, vote_count)
                         self.broadcast(f"{target.name} is on the block to die with {vote_count} votes.", to=self.gamestate.players)
-                    elif vote_count == on_the_block[1]:
+                    elif vote_count == on_the_block[1] and on_the_block[0] is not None:
                         # Enough votes to tie
                         self.broadcast(f"The vote is tied with {on_the_block[0]}. Nobody is on the block.")
-                        on_the_block[0] = None
+                        on_the_block = (None, vote_count)
+                    else:
+                        # Not enough votes to get on the block
+                        self.broadcast("The vote doesn't receive enough votes.")
 
                     # Update list of nominators and nominees, and remaining turns
                     nominators.append(p)
