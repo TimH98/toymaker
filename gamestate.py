@@ -1,5 +1,5 @@
 from typing import List
-from player import Player
+from player.player import Player
 from random import choice, random, sample
 from characters import *
 import util

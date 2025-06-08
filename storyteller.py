@@ -6,7 +6,8 @@ import re
 from typing import List, Optional, Tuple
 from characters import *
 from gamestate import GameState
-from player import ChoiceType, Player
+from player.player import ChoiceType, Player
+from player.text_bot_player import TextBotPlayer
 import util
 
 # DAY_TIMES[i] = the total number of turns for a day where i players are alive
@@ -27,7 +28,7 @@ class Storyteller:
             think = None
             if characters[i] == DRUNK:
                 think = drunk
-            p = Player(name, player_names, characters[i], think)
+            p = TextBotPlayer(name, player_names, characters[i], think)
             self.gamestate.add_player(p)
         self.gamestate.bluffs = bluffs
         self.gamestate.reminders["red_herring"] = self.select_red_herring()
