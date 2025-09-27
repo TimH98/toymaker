@@ -112,6 +112,9 @@ class GameState:
         
     def generate_librarian_info(self):
         valid_outsiders = [p for p in self.players if (util.registers_as_outsider(p.character))]
+        # Don't want to ALWAYS see the spy in 0-outsider games
+        if any(p.character == SPY for p in valid_outsiders) and random() < 0.5:
+            valid_outsiders = [p for p in valid_outsiders if p.character != SPY]
         non_lib_players = [p for p in self.players if p.think != LIBRARIAN]
         outsider_bluffs = [b for b in self.bluffs if b in OUTSIDERS]
         sober = {

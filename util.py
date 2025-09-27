@@ -16,10 +16,11 @@ GPT_4O_MINI = "gpt-4o-mini"
 GEMINI_2_0_FLASH = "gemini-2.0-flash"
 GEMINI_2_0_FLASH_LITE = "gemini-2.0-flash-lite"
 GEMINI_2_5_FLASH_PREVIEW_05_20 = "gemini-2.5-flash-preview-05-20"
+GEMINI_2_5_FLASH = "gemini-2.5-flash"
 MODELS = {
     OLLAMA: {LLAMA_3_2, QWEN_3_4B},
     OPENAI: {GPT_4O, GPT_4O_MINI}, # these names are unchecked
-    GEMINI: {GEMINI_2_0_FLASH, GEMINI_2_0_FLASH_LITE, GEMINI_2_5_FLASH_PREVIEW_05_20},
+    GEMINI: {GEMINI_2_0_FLASH, GEMINI_2_0_FLASH_LITE, GEMINI_2_5_FLASH_PREVIEW_05_20, GEMINI_2_5_FLASH},
 }
 
 MODEL = GEMINI_2_5_FLASH_PREVIEW_05_20
@@ -36,7 +37,7 @@ def get_response(history: List[Dict[str, str]], name: str) -> str:
         "content": SYSTEM_MESSAGE.format(name=name)
     }
     messages = [system_message] + history
-    
+
     data = { 
         "model": MODEL,
         "messages": messages,

@@ -51,13 +51,13 @@ class Storyteller:
         # fetch 4 extra townsfolk, use 3 as bluffs, use 1 as drunk
         if BARON in minions:
             outsiders = sample(OUTSIDERS, k=2)
-            townsfolk = sample(TOWNSFOLK, k=7)
+            townsfolk = sample(TOWNSFOLK, k=4)
         else:
             outsiders = sample(OUTSIDERS, k=0)
-            townsfolk = sample(TOWNSFOLK, k=9)
-        bluffs = townsfolk[:3] # TODO bluffs can be outsiders
-        drunk = townsfolk[3]
-        townsfolk = townsfolk[4:]
+            townsfolk = sample(TOWNSFOLK, k=6)
+        bluffs = shuffle(TOWNSFOLK + OUTSIDERS).filter(lambda x: x not in townsfolk and x not in outsiders and x != DRUNK)[:3]
+        drunk = townsfolk[0]
+        townsfolk = townsfolk[1:]
         chars = demons + minions + outsiders + townsfolk
         shuffle(chars)
         return (
@@ -83,6 +83,9 @@ class Storyteller:
         else:
             self.broadcast(f"The day begins, and the town wakes to discover that nobody died last night.")
         
+        player_states = [f"{p.name} {'(alive)' if p.alive else '(dead)'}" for p in self.gamestate.players]
+        self.broadcast(f"The following players are in the game:\n{'\n'.join(player_states)}")
+        
         while time < DAY_TIMES[alive_players]:
             time += 1
             for p in turn_order:
@@ -90,8 +93,7 @@ class Storyteller:
                 p.add_history(f"[1] Whisper to a player privately (recommended)")
                 p.add_history(f"[2] Say something publicly")
                 p.add_history(f"[3] Pass")
-                p.reminder()
-                choice = p.get_choice(ChoiceType.NUMBER)
+                choice = p.get_choice(ChoiceType.NUMBER, reminder=True)
                 if choice == 1:
                     p.add_history("Please choose a player.")
                     target_name = p.get_choice(ChoiceType.NAME, allowed_values=[q.name for q in turn_order if q.name != p.name])
@@ -126,7 +128,7 @@ class Storyteller:
             choice = p.get_choice(ChoiceType.NUMBER)
             if choice == 1:
                 p.add_history("Please choose a player to nominate. Your options are:")
-                p.add_history(f"{', '.join([p.name for p in self.gamestate.players if p not in nominees])}")
+                p.add_history(f"{', '.join([p.name for p in self.gamestate.players if p.name not in nominees])}")
                 target_name = p.get_choice(ChoiceType.NAME)
                 target = self.gamestate.name_to_player(target_name)
                 if target_name not in nominees:
@@ -148,14 +150,14 @@ class Storyteller:
                         on_the_block = (None, vote_count)
                     else:
                         # Not enough votes to get on the block
-                        self.broadcast("The vote doesn't receive enough votes.")
+                        self.broadcast("The nomination doesn't receive enough votes.")
 
                     # Update list of nominators and nominees, and remaining turns
-                    nominators.append(p)
-                    nominees.append(target)
+                    nominators.append(p.name)
+                    nominees.append(target_name)
                     player_index = self.gamestate.players.index(p)
                     tmp = self.gamestate.players[player_index:] + self.gamestate.players[:player_index]
-                    remaining_turns = [p for p in tmp if p.alive and p not in nominators]
+                    remaining_turns = [p for p in tmp if p.alive and p.name not in nominators]
                 else:
                     p.add_history(f"{target_name} has already been nominated today.")
         

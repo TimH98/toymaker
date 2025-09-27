@@ -20,23 +20,18 @@ def get_alignment_message(character):
     return "You are good, and win by finding and executing the demon."
 
 class Player(ABC):
-    name = ""
-    # Track all the info that will be dumped into the next user message
-    new_message = ""
-    character = ""
-    # Same as self.character unless they are the Drunk
-    think = ""
-    messages = []
-    player_names = []
-
     @abstractmethod
     def add_history(self, text):
         pass
 
     def __init__(self, name, player_names, character, think=None):
         self.name = name
+        # Track all the info that will be dumped into the next user message
+        self.new_message = ""
         self.character = character
+        # Same as self.character unless they are the Drunk
         self.think = think if think else character
+        self.messages = []
         self.player_names = player_names
         self.alive = True
         self.has_ghost_vote = True
@@ -49,5 +44,5 @@ class Player(ABC):
             self.add_history(f.read())
 
     @abstractmethod
-    def get_choice(self, choice_type: ChoiceType, allowed_values: List[str] = None) -> Union[str, List[str], int]:
+    def get_choice(self, choice_type: ChoiceType, allowed_values: List[str] = None, reminder: bool = False) -> Union[str, List[str], int]:
         pass

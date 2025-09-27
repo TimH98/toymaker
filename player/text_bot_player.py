@@ -37,7 +37,11 @@ class TextBotPlayer(Player):
                     resp = i
             return resp
         
-    def get_choice(self, choice_type: ChoiceType, allowed_values: List[str] = None):
+    def get_choice(self, choice_type: ChoiceType, allowed_values: List[str] = None, reminder: bool = False):
+        new_message = self.new_message
+        if reminder:
+            good_or_evil = "You are good" if self.character in TOWNSFOLK or self.character in OUTSIDERS else "You are evil, but should try to appear good"
+            new_message += f"\n[Reminder: Your name is {self.name}. You are the {self.think}. {good_or_evil}.]"
         self.messages.append({
             "role": "user",
             "content": self.new_message
@@ -85,7 +89,3 @@ class TextBotPlayer(Player):
         self.new_message = ""
         
         return clean_resp
-
-    def reminder(self):
-        good_or_evil = "You are good" if self.character in TOWNSFOLK or self.character in OUTSIDERS else "You are evil, but should try to appear good"
-        self.add_history(f"[Reminder: Your name is {self.name}. You are the {self.think}. {good_or_evil}.]")
