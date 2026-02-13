@@ -48,14 +48,16 @@ class Storyteller:
         # TODO: support player counts other than 7
         demons = sample(DEMONS, k=1)
         minions = sample(MINIONS, k=1)
-        # fetch 4 extra townsfolk, use 3 as bluffs, use 1 as drunk
+        # fetch 1 extra townsfolk to use as the drunk, if needed
         if BARON in minions:
             outsiders = sample(OUTSIDERS, k=2)
             townsfolk = sample(TOWNSFOLK, k=4)
         else:
             outsiders = sample(OUTSIDERS, k=0)
             townsfolk = sample(TOWNSFOLK, k=6)
-        bluffs = shuffle(TOWNSFOLK + OUTSIDERS).filter(lambda x: x not in townsfolk and x not in outsiders and x != DRUNK)[:3]
+        bluffs = [x for x in TOWNSFOLK + OUTSIDERS if x not in townsfolk and x not in outsiders and x != DRUNK]
+        shuffle(bluffs)
+        bluffs = bluffs[:3]
         drunk = townsfolk[0]
         townsfolk = townsfolk[1:]
         chars = demons + minions + outsiders + townsfolk
@@ -115,7 +117,8 @@ class Storyteller:
     def nominations(self):
         nominators = []
         nominees = []
-        on_the_block = (None, ceil(len(self.gamestate.players) / 2) - 1) # Tuple of (name, vote_count)
+        alive_count = len([p for p in self.gamestate.players if p.alive])
+        on_the_block = (None, ceil(alive_count / 2) - 1) # Tuple of (name, vote_count)
 
         with open("nominations.txt", "r") as f:
             self.broadcast(f.read())
@@ -386,6 +389,7 @@ class Storyteller:
             self.gamestate.reminders["protected"] = self.gamestate.name_to_player(choice)
         
     def imp_turn(self):
+        self.died_tonight = None
         player = self.gamestate.character_to_player(IMP)
         if not player or not player.alive:
             return

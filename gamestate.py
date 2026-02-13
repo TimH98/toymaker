@@ -35,7 +35,6 @@ class GameState:
         return characters[0]
     
     def check_win(self):
-        # TODO handle mayor
         imps = [p for p in self.players if p.character == IMP and p.alive]
         mayor = self.character_to_player(MAYOR)
         if len(imps) == 0:
