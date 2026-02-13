@@ -65,8 +65,7 @@ def get_response(history: List[Dict[str, str]], name: str) -> str:
         # "think": False,
         # "stream": False
     }
-    
-    # json.dump(data, open("data.json", "w"))
+
     if MODEL in MODELS[GEMINI]:
         return get_gemini_response(data)
     elif MODEL in MODELS[OPENAI]:

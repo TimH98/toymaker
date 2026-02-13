@@ -1,2 +1,9 @@
 __pycache__
 key_DO_NOT_COMMIT
+data.json
+debug.txt
+error_log.txt
+log.txt
+log.txt.old
+oneoff-testing.py
+.vscode
