@@ -1,6 +1,7 @@
 import time
-from typing import List, Union
+from typing import List
 from characters import OUTSIDERS, TOWNSFOLK
+import llm
 from player.player import ChoiceType, DataError, Player
 import util
 
@@ -26,7 +27,8 @@ class TextBotPlayer(Player):
         errors = []
         while not success and tries < 10:
             try:
-                resp = util.get_response(
+                resp = llm.get_response(
+                    model=self.model,
                     history=self.messages,
                     name=self.name,
                 )
@@ -34,7 +36,7 @@ class TextBotPlayer(Player):
                 if allowed_values and clean_resp not in allowed_values:
                     raise DataError(f"Respond with a valid value. Valid values are: {', '.join(allowed_values)}.")
                 success = True
-            except util.ModelError as e:
+            except llm.ModelError as e:
                 errors.append(e)
                 time.sleep(wait_time)
                 wait_time *= 2

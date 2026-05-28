@@ -9,7 +9,6 @@ from gamestate import GameState
 from player.human_player import HumanPlayer
 from player.player import ChoiceType, Player
 from player.text_bot_player import TextBotPlayer
-import util
 
 # DAY_TIMES[i] = the total number of turns for a day where i players are alive
 DAY_TIMES = [0, 0, 0, 2, 2, 2, 2, 3]
@@ -22,18 +21,18 @@ def is_slayer_shot(message: str) -> Tuple[bool, str]:
     return False, None
 
 class Storyteller:
-    def __init__(self, player_names: List[str], human_player: bool = False):
+    def __init__(self, player_names: List[str], model: str, spectate: bool = False):
         self.gamestate = GameState()
         characters, bluffs, drunk = self.select_characters()
         for i, name in enumerate(player_names):
             think = None
             if characters[i] == DRUNK:
                 think = drunk
-            if human_player and i == 0:
+            if not spectate and i == 0:
                 p = HumanPlayer(name, player_names, characters[i], think)
                 self.gamestate.add_player(p)
             else:
-                p = TextBotPlayer(name, player_names, characters[i], think)
+                p = TextBotPlayer(name, player_names, characters[i], think, model)
                 self.gamestate.add_player(p)
         self.gamestate.bluffs = bluffs
         self.gamestate.reminders["red_herring"] = self.select_red_herring()

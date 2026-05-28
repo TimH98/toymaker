@@ -23,8 +23,6 @@ class GameState:
     def name_to_player(self, name: str, debug=False):
         names = [p for p in self.players if p.name.lower() == name.lower()]
         if len(names) == 0:
-            # if debug:
-            #     util.log(f"DEBUG: {name} not found in {[p.name for p in self.players]}")
             return None
         return names[0]
 

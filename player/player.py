@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum, auto
-import time
 from typing import List, Union
-from characters import DEMONS, MINIONS, OUTSIDERS, TOWNSFOLK
-import util
+from characters import DEMONS, MINIONS
 
 class ChoiceType(Enum):
     TEXT = auto()
@@ -24,7 +22,7 @@ class Player(ABC):
     def add_history(self, text):
         pass
 
-    def __init__(self, name, player_names, character, think=None):
+    def __init__(self, name, player_names, character, think=None, model=None):
         self.name = name
         # Track all the info that will be dumped into the next user message
         self.new_message = ""
@@ -36,6 +34,7 @@ class Player(ABC):
         self.alive = True
         self.has_ghost_vote = True
         # self.claim = None # what evil players want to misregister as - TODO will implement later
+        self.model = model
 
         self.add_history(f"Your name is {self.name}. The full list of players, seated in order, is: {', '.join(player_names)}.")
         self.add_history(f"You are the {self.think}. " + get_alignment_message(character))
