@@ -10,32 +10,6 @@ class TextBotPlayer(Player):
         if self.name == "Alice":
             print(text)
         self.new_message += '\n' + text
-
-    def _clean_response(self, response: str, choice_type: ChoiceType) -> Union[str, List[str], int]:
-        if choice_type == ChoiceType.TEXT:
-            # cut down to one paragraph in case they start yapping
-            return response.strip("'\"\n").split("\n")[0]
-        elif choice_type == ChoiceType.NAME:
-            response = response.lower()
-            players = [name for name in self.player_names if name.lower() in response]
-            if len(players) < 1:
-                print("Bad response: ", response)
-                raise DataError("Please respond with ONLY a player name.")
-            return players[0]
-        elif choice_type == ChoiceType.TWO_NAMES:
-            response = response.lower()
-            players = [name for name in self.player_names if name.lower() in response]
-            if len(players) < 2:
-                print("Bad response: ", response)
-                raise DataError("Please respond with ONLY two player names.")
-            return players[0:2]
-        elif choice_type == ChoiceType.NUMBER:
-            # We won't have more than 20 options at any point right?
-            resp = ""
-            for i in range(20):
-                if str(i) in response:
-                    resp = i
-            return resp
         
     def get_choice(self, choice_type: ChoiceType, allowed_values: List[str] = None, reminder: bool = False):
         new_message = self.new_message
@@ -58,7 +32,7 @@ class TextBotPlayer(Player):
                 )
                 clean_resp = self._clean_response(resp, choice_type)
                 if allowed_values and clean_resp not in allowed_values:
-                    raise DataError(f"Please respond with a valid value. Valid values are: {', '.join(allowed_values)}.")
+                    raise DataError(f"Respond with a valid value. Valid values are: {', '.join(allowed_values)}.")
                 success = True
             except util.ModelError as e:
                 errors.append(e)

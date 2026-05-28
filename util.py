@@ -12,6 +12,9 @@ GEMINI = "gemini"
 LLAMA_3_2 = "llama3.2"
 QWEN_3_4B = "qwen3:4b"
 QWEN_3_8B = "qwen3:8b"
+QWEN_3_5_4B = "qwen3.5:4b"
+QWEN_3_5_9B = "qwen3.5:9b"
+GEMMA_4_E4B = "gemma4:e4b"
 GPT_4O = "gpt-4o"
 GPT_4O_MINI = "gpt-4o-mini"
 GPT_4_1_MINI = "gpt-4.1-mini"
@@ -25,13 +28,13 @@ GEMINI_2_5_FLASH = "gemini-2.5-flash"
 GEMINI_2_5_PRO = "gemini-2.5-pro"
 GEMINI_3_FLASH_PREVIEW = "gemini-3-flash-preview"
 MODELS = {
-    OLLAMA: {LLAMA_3_2, QWEN_3_4B, QWEN_3_8B},
+    OLLAMA: {LLAMA_3_2, QWEN_3_4B, QWEN_3_8B, QWEN_3_5_4B, QWEN_3_5_9B, GEMMA_4_E4B},
     OPENAI: {
         GPT_4O,         # expensive, haven't tried yet
         GPT_4O_MINI,    # gets lost eventually
         GPT_4_1_MINI,   # somewhat coherent? but gets repeaty and makes incorrect logical inferences
         GPT_5_NANO,     # immediately gets lost
-        GPT_5_MINI,     # quickly outed self as spy
+        GPT_5_MINI,     # can't help but out itself as minion, but good players can deduce decently
     },
     GEMINI: {
         GEMINI_2_0_FLASH,
@@ -44,7 +47,7 @@ MODELS = {
     },
 }
 
-MODEL = GPT_5_MINI
+MODEL = GEMMA_4_E4B
 
 class ModelError(Exception):
     pass
@@ -63,7 +66,7 @@ def get_response(history: List[Dict[str, str]], name: str) -> str:
         "model": MODEL,
         "messages": messages,
         # "think": False,
-        # "stream": False
+        "stream": False
     }
 
     if MODEL in MODELS[GEMINI]:
@@ -78,7 +81,11 @@ def get_response(history: List[Dict[str, str]], name: str) -> str:
 def get_ollama_response(data: Dict[str, any]):
     resp = requests.post("http://localhost:11434/api/chat", json=data)
     if resp.status_code == 200:
-        return resp.json()["message"]["content"]
+        try:
+            return resp.json()["message"]["content"]
+        except json.JSONDecodeError as e:
+            print(resp.text)
+            raise e
     raise ModelError(f"error prompting model: {resp.text}")
 
 def get_openai_response(data: Dict[str, any]):

@@ -6,6 +6,7 @@ import re
 from typing import List, Optional, Tuple
 from characters import *
 from gamestate import GameState
+from player.human_player import HumanPlayer
 from player.player import ChoiceType, Player
 from player.text_bot_player import TextBotPlayer
 import util
@@ -21,15 +22,19 @@ def is_slayer_shot(message: str) -> Tuple[bool, str]:
     return False, None
 
 class Storyteller:
-    def __init__(self, player_names: List[str]):
+    def __init__(self, player_names: List[str], human_player: bool = False):
         self.gamestate = GameState()
         characters, bluffs, drunk = self.select_characters()
         for i, name in enumerate(player_names):
             think = None
             if characters[i] == DRUNK:
                 think = drunk
-            p = TextBotPlayer(name, player_names, characters[i], think)
-            self.gamestate.add_player(p)
+            if human_player and i == 0:
+                p = HumanPlayer(name, player_names, characters[i], think)
+                self.gamestate.add_player(p)
+            else:
+                p = TextBotPlayer(name, player_names, characters[i], think)
+                self.gamestate.add_player(p)
         self.gamestate.bluffs = bluffs
         self.gamestate.reminders["red_herring"] = self.select_red_herring()
 
@@ -97,7 +102,7 @@ class Storyteller:
                 p.add_history(f"[3] Pass")
                 choice = p.get_choice(ChoiceType.NUMBER, reminder=True)
                 if choice == 1:
-                    p.add_history("Please choose a player.")
+                    p.add_history("Choose a player.")
                     target_name = p.get_choice(ChoiceType.NAME, allowed_values=[q.name for q in turn_order if q.name != p.name])
                     p.add_history(f"What would you like to say to {target_name}?")
                     message = p.get_choice(ChoiceType.TEXT)
@@ -106,7 +111,7 @@ class Storyteller:
                     other_players = [q for q in turn_order if q.name != p.name and q.name != target_name]
                     self.broadcast(f"{p.name} whispers to {target_name}.", to=other_players)
                 elif choice == 2:
-                    p.add_history("Please say something.")
+                    p.add_history("Enter your message.")
                     message = p.get_choice(ChoiceType.TEXT)
                     townsquare_without_p = [q for q in turn_order if q.name != p.name]
                     self.broadcast(f"{p.name} says, '{message}'", to=townsquare_without_p)
@@ -130,7 +135,7 @@ class Storyteller:
             p.add_history("[2] No")
             choice = p.get_choice(ChoiceType.NUMBER)
             if choice == 1:
-                p.add_history("Please choose a player to nominate. Your options are:")
+                p.add_history("Choose a player to nominate. Your options are:")
                 p.add_history(f"{', '.join([p.name for p in self.gamestate.players if p.name not in nominees])}")
                 target_name = p.get_choice(ChoiceType.NAME)
                 target = self.gamestate.name_to_player(target_name)
@@ -171,7 +176,7 @@ class Storyteller:
             executed.alive = False
             if executed.character == IMP:
                 scarlet_woman = self.gamestate.character_to_player(SCARLET_WOMAN)
-                # TODO handle poisoned scarlet woman I guess lmao
+                # TODO handle poisoned scarlet woman when 10+ player games are possible
                 if scarlet_woman is not None and scarlet_woman.alive:
                     scarlet_woman.character = IMP
                     scarlet_woman.think = IMP
@@ -278,7 +283,7 @@ class Storyteller:
         player = self.gamestate.character_to_player(POISONER)
         if not player or not player.alive:
             return
-        player.add_history("Please choose a player to poison.")
+        player.add_history("Choose a player to poison.")
         choice = player.get_choice(ChoiceType.NAME)
         self.gamestate.reminders["poisoned"] = self.gamestate.name_to_player(choice)
 
@@ -362,7 +367,7 @@ class Storyteller:
             ft_info = self.info[FORTUNE_TELLER]["drunk"]
         else:
             ft_info = self.info[FORTUNE_TELLER]["sober"]
-        player.add_history("Please choose two players.")
+        player.add_history("Choose two players.")
         choices = player.get_choice(ChoiceType.TWO_NAMES)
         is_demon = ft_info[choices[0]] + ft_info[choices[1]] >= 2
         if is_demon:
@@ -375,7 +380,7 @@ class Storyteller:
         player = self.gamestate.character_to_player(BUTLER)
         if not player or not player.alive:
             return
-        player.add_history("Please choose a player.")
+        player.add_history("Choose a player.")
         choice = player.get_choice(ChoiceType.NAME)
         player.add_history(f"Tomorrow, you may only vote if {choice} votes.")
     
@@ -383,7 +388,7 @@ class Storyteller:
         player = self.gamestate.character_to_player(MONK)
         if not player or not player.alive:
             return
-        player.add_history("Please choose a player to protect (not yourself).")
+        player.add_history("Choose a player to protect (not yourself).")
         choice = player.get_choice(ChoiceType.NAME, allowed_values=[p.name for p in self.gamestate.players if p != player])
         if self.gamestate.reminders["poisoned"] != player and player.character != DRUNK:
             self.gamestate.reminders["protected"] = self.gamestate.name_to_player(choice)
@@ -393,7 +398,7 @@ class Storyteller:
         player = self.gamestate.character_to_player(IMP)
         if not player or not player.alive:
             return
-        player.add_history("Please choose a player to kill.")
+        player.add_history("Choose a player to kill.")
         choice = player.get_choice(ChoiceType.NAME)
         dead = self.gamestate.name_to_player(choice)
         # TODO handle poisoned imp I guess lmao
@@ -419,7 +424,7 @@ class Storyteller:
             rk_info = self.info[RAVENKEEPER]["drunk"]
         else:
             rk_info = self.info[RAVENKEEPER]["sober"]
-        player.add_history("You have died. Please choose a player.")
+        player.add_history("You have died. Choose a player.")
         choice = player.get_choice(ChoiceType.NAME)
         player.add_history(f"You learn that {choice} is the {rk_info[choice]}.")
 
