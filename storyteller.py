@@ -375,10 +375,11 @@ class Storyteller:
             player.add_history(f"You learn that {choices[0]} and {choices[1]} are not the demon.")
 
     def butler_turn(self):
-        # Is it morally right to throw this choice into the void? :thonk:
         player = self.gamestate.character_to_player(BUTLER)
         if not player or not player.alive:
             return
+
+        # Since butler is honor-system-based, we won't actually do anything with this output
         player.add_history("Choose a player.")
         choice = player.get_choice(ChoiceType.NAME)
         player.add_history(f"Tomorrow, you may only vote if {choice} votes.")

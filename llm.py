@@ -26,10 +26,21 @@ GEMINI_2_5_FLASH_LITE = "gemini-2.5-flash-lite"
 GEMINI_2_5_FLASH = "gemini-2.5-flash"
 GEMINI_2_5_PRO = "gemini-2.5-pro"
 GEMINI_3_FLASH_PREVIEW = "gemini-3-flash-preview"
+# to add support for a new model, add it under the appropriate key in MODELS below, e.g.:
+# MY_MODEL = "my-model:4b"
+
 MODELS = {
-    OLLAMA: {LLAMA_3_2, QWEN_3_4B, QWEN_3_8B, QWEN_3_5_4B, QWEN_3_5_9B, GEMMA_4_E4B},
+    OLLAMA: {
+        LLAMA_3_2,
+        QWEN_3_4B,
+        QWEN_3_8B,
+        QWEN_3_5_4B,
+        QWEN_3_5_9B,
+        GEMMA_4_E4B,
+        # MY_MODEL,
+    },
     OPENAI: {
-        GPT_4O,         # expensive, haven't tried yet
+        GPT_4O,
         GPT_4O_MINI,    # gets lost eventually
         GPT_4_1_MINI,   # somewhat coherent? but gets repeaty and makes incorrect logical inferences
         GPT_5_NANO,     # immediately gets lost
