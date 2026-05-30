@@ -1,14 +1,14 @@
-# Blood on the Clocktower Storyteller & AI Player
+# Toymaker: AI Storyteller & Player for Blood on the Clocktower
 
 *Finally, I've fully automated my favorite game so I don't have to bother playing anymore*
 
-This script will run a game of [Blood on the Clocktower](https://bloodontheclocktower.com/) from start to finish, with a programmatic Storyteller and LLM-powered players. It also provides the option to participate in the game yourself, creating a single-player BotC experience.
+This script will run a game of [Blood on the Clocktower](https://bloodontheclocktower.com/) from start to finish, with a programmatic Storyteller and LLM-powered players. It also provides the option to participate in the game, creating a single-player BotC experience.
 
 ## Usage
 
 `python main.py model_name [--spectate]`
 
-This starts a 7-player game of Trouble Brewing, with output to player 1 (named "Alice") being printed to the console. By default, the user plays as Alice and provides inputs for that player. Providing the `--spectate` arg allows an LLM control Alice, with Alice's perspective being printed to the console.
+This starts a 7-player game of Trouble Brewing, with output to player 1 (named "Alice") being printed to the console. By default, the user plays as Alice and provides inputs for that player. Providing the `--spectate` arg allows an LLM to control Alice, with Alice's perspective being printed to the console.
 
 All players' perspectives are logged to `log.txt`, giving a bird's-eye view of the game.
 
@@ -81,6 +81,7 @@ There are a number of places this codebase could be improved! I have no immediat
 
 - Better context management, e.g. condensing/summarizing the oldest messages
 - Support for more than 7 players
-- Support specific bluffs by asking evil players in the night time what they'd like to register as, or by using an additional LLM to read evil players' chat messages and discern what they're bluffing as
+- Support specific bluffs by asking evil players what they'd like to register as, or by using an additional LLM to read evil players' chat messages and discern what they're bluffing as
 - Show Washerwoman/Librarian/Investigator/Butler reminder tokens to the Spy
-- More nuanced Storyteller decisions, for example what to give a poisoned Fortune Teller or Investigator
+- More nuanced Storyteller decisions, for example what to give a poisoned Fortune Teller or who to kill if the demon targets the Mayor
+- Support for scripts other than Trouble Brewing
